@@ -3,6 +3,7 @@ from pyspark.sql import SparkSession
 from transform import TaxiTransformer
 from load import PostgresLoader
 from dotenv import load_dotenv
+from enrich import LLMEnricher
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 RAW_PATH = os.path.join(SCRIPT_DIR, "data", "raw", "yellow_tripdata_2024-01.parquet")
@@ -22,12 +23,20 @@ silver_final, rejected_all = transformer.clean_to_silver(bronze)
 gold = transformer.aggregate_to_gold(silver_final)
 rejected_summary = transformer.summarize_rejections(rejected_all)
 
-gold.show(10)
-rejected_summary.show()
+llm_agg = transformer.aggregate_for_llm(silver_final)
+#llm_agg.show(24)
 
 # --- Load ---
 loader = PostgresLoader(DB_CONNECTION_STRING)
 loader.save_gold(gold)
 loader.save_rejected_summary(rejected_summary)
+
+llm_agg = transformer.aggregate_for_llm(silver_final)
+
+enricher = LLMEnricher("qwen/qwen2.5-coder-14b")  # albo inny model, którego używałeś
+analiza = enricher.analyze_hourly_patterns(llm_agg)
+print(analiza)
+
+loader.save_llm_analysis(analiza)
 
 spark.stop()

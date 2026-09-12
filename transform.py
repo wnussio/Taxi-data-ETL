@@ -51,5 +51,24 @@ class TaxiTransformer:
         )
         return gold
 
+    
+
     def summarize_rejections(self, rejected_df):
         return rejected_df.groupBy("reason").count().withColumnRenamed("count", "liczba")
+
+
+    def aggregate_for_llm(self, silver_df):
+        """Dodatkowa agregacja silver -> tylko per godzina (24 wiersze), pod prompt do LLM."""
+        
+        agg_lmm=silver_df.withColumn("godzina", F.hour("tpep_pickup_datetime"))
+
+        agg_lmm=agg_lmm.groupBy("godzina").agg(
+            F.count("*").alias("liczba_kursow"),
+            F.avg('trip_duration_min').alias("avg_duration_min"),
+            F.avg('trip_distance').alias("avg_distance"),
+            F.avg('fare_amount').alias("avg_fare"),
+            F.sum('trip_duration_min').alias("total_duration_min"),
+            F.sum('trip_distance').alias("total_distance"),
+            F.sum('fare_amount').alias("total_fare"))
+        return agg_lmm
+        

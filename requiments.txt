@@ -1,0 +1,7 @@
+pyspark==3.5.3
+pandas
+sqlalchemy
+psycopg2-binary
+python-dotenv
+requests
+lmstudio

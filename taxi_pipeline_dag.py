@@ -15,7 +15,8 @@ from enrich import LLMEnricher
 import os
 
 DB_PASSWORD = os.environ.get("DB_PASSWORD")
-DB_CONNECTION_STRING = f"postgresql+psycopg2://postgres:{DB_PASSWORD}@host.docker.internal:5432/Testy"LLM_BASE_URL = "http://host.docker.internal:1234"
+DB_CONNECTION_STRING = f"postgresql+psycopg2://postgres:{DB_PASSWORD}@host.docker.internal:5432/Testy"
+LLM_BASE_URL = "http://host.docker.internal:1234"
 LLM_MODEL = "qwen/qwen2.5-coder-14b"
 
 DATA_FOLDER = "/opt/airflow/dags/taxi_etl/data/raw"

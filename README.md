@@ -76,3 +76,49 @@ NYC TLC (Parquet, publiczne API)
 ## Źródło danych
 
 [NYC TLC Trip Record Data](https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page)
+
+---
+
+# ENG
+
+## What it does
+
+An end-to-end pipeline for NYC taxi trip data: it downloads raw trip records,
+cleans and aggregates them with Apache Spark, stores the results in PostgreSQL
+and enriches them with an analysis generated locally by an LLM (LM Studio).
+Every rejected record is logged with a reason (`too_short`, `bad_distance`,
+`high_price`, etc.), so no data disappears without a trace.
+
+## Architecture
+
+```
+NYC TLC (Parquet, public API)
+        │  Extract
+        ▼
+   Spark: Bronze (raw data)
+        │  Transform (cleaning)
+        ▼
+   Spark: Silver (cleaned data + rejection log with reasons)
+        │  Transform (aggregation)
+        ▼
+   Spark: Gold (hour × pickup zone aggregation)
+        │  Load
+        ▼
+   PostgreSQL (gold_hourly_zone, rejected_summary)
+        │  Enrich
+        ▼
+   LLM (LM Studio) → hourly pattern analysis
+        │  Load
+        ▼
+   PostgreSQL (llm_analysis)
+```
+
+## How to run
+
+1. Install dependencies: `pip install -r requirements.txt`
+2. Create a `.env` file containing: `DB_PASSWORD=your_password`
+3. Make sure a PostgreSQL server and LM Studio (with a loaded model) are running
+4. Run: `python main.py`
+
+## Next steps
+

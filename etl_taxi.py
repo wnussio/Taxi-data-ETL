@@ -12,10 +12,8 @@ import os
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 RAW_PATH = os.path.join(SCRIPT_DIR, "data", "raw", "yellow_tripdata_2024-01.parquet")
 
-from dotenv import load_dotenv
-load_dotenv()
-db_password = os.environ.get("DB_PASSWORD")
-DB_CONNECTION_STRING = f"postgresql+psycopg2://postgres:{db_password}@localhost:5432/Testy"
+DB_PASSWORD = os.environ.get("DB_PASSWORD")
+DB_CONNECTION_STRING = f"postgresql+psycopg2://postgres:{DB_PASSWORD}@localhost:5432/Testy"
 
 # ====== BRONZE: wczytanie ======
 spark = SparkSession.builder.appName("TaxiETL").getOrCreate()

@@ -47,20 +47,29 @@ NYC TLC (Parquet, publiczne API)
 ## Struktura projektu
 
 ```
-├── extract.py    # TaxiDataExtractor - pobieranie danych z NYC TLC
-├── transform.py  # TaxiTransformer - logika Spark (Bronze/Silver/Gold)
-├── load.py       # PostgresLoader - zapis wyników do PostgreSQL
-├── enrich.py     # LLMEnricher - analiza wzorców przez LM Studio
-├── main.py       # orkiestracja całego pipeline'u
-└── transform_exploration.ipynb  # notebook roboczy z eksploracją transformacji
+├── pyproject.toml          # metadane projektu i zależności
+├── src/taxi_etl/
+│   ├── extract.py          # TaxiDataExtractor - pobieranie danych z NYC TLC
+│   ├── transform.py        # TaxiTransformer - logika Spark (Bronze/Silver/Gold)
+│   ├── load.py             # PostgresLoader - zapis wyników do PostgreSQL
+│   ├── enrich.py           # LLMEnricher - analiza wzorców przez LM Studio
+│   └── main.py             # orkiestracja całego pipeline'u
+├── dags/
+│   └── taxi_pipeline_dag.py        # DAG Airflow
+└── notebooks/
+    └── transform_exploration.ipynb # notebook roboczy z eksploracją transformacji
 ```
 
 ## Uruchomienie
 
-1. Zainstaluj zależności: `pip install -r requirements.txt`
-2. Utwórz plik `.env` z zawartością: `DB_PASSWORD=twoje_haslo`
-3. Upewnij się, że masz uruchomiony serwer PostgreSQL i LM Studio (z załadowanym modelem)
-4. Uruchom: `python main.py`
+1. Utwórz i aktywuj środowisko wirtualne:
+   `python -m venv .venv`, potem `source .venv/Scripts/activate` (Git Bash na Windows)
+   lub `source .venv/bin/activate` (Linux/macOS)
+2. Zainstaluj projekt: `pip install -e .`
+3. Utwórz plik `.env` z zawartością: `DB_PASSWORD=twoje_haslo`
+4. Upewnij się, że masz uruchomiony serwer PostgreSQL i LM Studio (z załadowanym modelem)
+5. Uruchom z katalogu głównego repo: `python -m taxi_etl.main`
+   (dane pobiorą się automatycznie do `data/raw/`, jeśli ich jeszcze nie ma)
 
 ## Znane ograniczenia
 
@@ -115,10 +124,14 @@ NYC TLC (Parquet, public API)
 
 ## How to run
 
-1. Install dependencies: `pip install -r requirements.txt`
-2. Create a `.env` file containing: `DB_PASSWORD=your_password`
-3. Make sure a PostgreSQL server and LM Studio (with a loaded model) are running
-4. Run: `python main.py`
+1. Create and activate a virtual environment:
+   `python -m venv .venv`, then `source .venv/Scripts/activate` (Git Bash on Windows)
+   or `source .venv/bin/activate` (Linux/macOS)
+2. Install the project: `pip install -e .`
+3. Create a `.env` file containing: `DB_PASSWORD=your_password`
+4. Make sure a PostgreSQL server and LM Studio (with a loaded model) are running
+5. Run from the repo root: `python -m taxi_etl.main`
+   (the data is downloaded to `data/raw/` automatically if it is not there yet)
 
 ## Next steps
 

@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "taxi-etl"
+version = "0.1.0"
+description = "NYC taxi ETL pipeline: Spark bronze/silver/gold to PostgreSQL"
+requires-python = ">=3.10"
+dependencies = [
+    "pyspark==3.5.3",
+    "pandas",
+    "sqlalchemy",
+    "psycopg2-binary",
+    "python-dotenv",
+    "requests",
+    "lmstudio",
+]

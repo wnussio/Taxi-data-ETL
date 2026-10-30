@@ -6,10 +6,10 @@ from airflow.providers.standard.operators.python import PythonOperator
 
 sys.path.append("/opt/airflow/dags/taxi_etl")
 
-from extract import TaxiDataExtractor
-from transform import TaxiTransformer
-from load import PostgresLoader
-from enrich import LLMEnricher
+from taxi_etl.extract import TaxiDataExtractor
+from taxi_etl.transform import TaxiTransformer
+from taxi_etl.load import PostgresLoader
+from taxi_etl.enrich import LLMEnricher
 
 
 import os

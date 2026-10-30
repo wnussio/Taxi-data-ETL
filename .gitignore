@@ -3,5 +3,5 @@ data/
 __pycache__/
 *.pyc
 *.parquet
-*.ipynb_checkpoints/
-*.venv/
+.ipynb_checkpoints/
+.venv/

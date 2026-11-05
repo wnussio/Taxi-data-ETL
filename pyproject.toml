@@ -9,6 +9,7 @@ description = "NYC taxi ETL pipeline: Spark bronze/silver/gold to PostgreSQL"
 requires-python = ">=3.10"
 dependencies = [
     "pyspark==3.5.9",
+    "setuptools",  # pyspark 3.5 toPandas() imports distutils, removed in Python 3.12
     "pandas",
     "sqlalchemy",
     "psycopg2-binary",

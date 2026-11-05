@@ -1,5 +1,9 @@
+import logging
 import os
+
 import requests
+
+logger = logging.getLogger(__name__)
 
 
 class TaxiDataExtractor:
@@ -37,7 +41,7 @@ class TaxiDataExtractor:
         local_path = self.get_local_path(destination_folder)
 
         if os.path.exists(local_path):
-            print(f"Plik już istnieje: {local_path}")
+            logger.info("File already exists, skipping download: %s", local_path)
             return local_path
 
         url = self.get_url()
@@ -50,7 +54,7 @@ class TaxiDataExtractor:
             for chunk in response.iter_content(chunk_size=8192):
                 f.write(chunk)
 
-        print(f"Pobrano: {local_path}")
+        logger.info("Downloaded %s", local_path)
         return local_path
 
                 

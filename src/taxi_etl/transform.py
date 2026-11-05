@@ -1,11 +1,17 @@
+import logging
+
 from pyspark.sql import functions as F
+
+logger = logging.getLogger(__name__)
+
+
 class TaxiTransformer:
     def __init__(self, spark):
         self.spark = spark
 
     def load_bronze(self, path):
         bronze = self.spark.read.parquet(path)
-        print("Bronze wczytane, liczba wierszy:", bronze.count())
+        logger.info("Bronze loaded: %d rows", bronze.count())
         return bronze
 
     def clean_to_silver(self, bronze_df):

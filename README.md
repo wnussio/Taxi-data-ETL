@@ -128,7 +128,7 @@ NYC TLC (Parquet, public API)
    `python -m venv .venv`, then `source .venv/Scripts/activate` (Git Bash on Windows)
    or `source .venv/bin/activate` (Linux/macOS)
 2. Install the project: `pip install -e .`
-3. Create a `.env` file containing: `DB_PASSWORD=your_password`
+3. Copy `.env.example` to `.env` and set at least `DB_PASSWORD` (and `DB_NAME`)
 4. Make sure a PostgreSQL server and LM Studio (with a loaded model) are running
 5. Run from the repo root: `python -m taxi_etl.main`
    (the data is downloaded to `data/raw/` automatically if it is not there yet)

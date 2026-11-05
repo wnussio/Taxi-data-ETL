@@ -1,6 +1,11 @@
-from sqlalchemy import create_engine
-import pandas as pd
+import logging
 from datetime import datetime
+
+import pandas as pd
+from sqlalchemy import create_engine
+
+logger = logging.getLogger(__name__)
+
 
 class PostgresLoader:
     """Zapisuje zagregowane wyniki (Spark DataFrame -> pandas -> PostgreSQL)."""
@@ -12,13 +17,13 @@ class PostgresLoader:
         # zapisuje gold, tam jest pandas zeby ominac java/.jar
         gold_pd = gold_df.toPandas()
         gold_pd.to_sql(table_name, self.engine, if_exists="replace", index=False)
-        print(f"Zapisano do PostgreSQL: {table_name} ({len(gold_pd)} wierszy)")
+        logger.info("Saved %s to PostgreSQL (%d rows)", table_name, len(gold_pd))
 
     def save_rejected_summary(self, rejected_summary_df, table_name: str = "rejected_summary"):
         #Zapisuje podsumowanie odrzuceń (mała tabela: reason + liczba).
         rejected_pd = rejected_summary_df.toPandas()
         rejected_pd.to_sql(table_name, self.engine, if_exists="replace", index=False)
-        print(f"Zapisano do PostgreSQL: {table_name} ({len(rejected_pd)} wierszy)")
+        logger.info("Saved %s to PostgreSQL (%d rows)", table_name, len(rejected_pd))
 
     def save_llm_analysis(self, analysis_text: str, table_name: str = "llm_analysis"):
         #zapisuje analize jako pojedynczy tekst
@@ -27,4 +32,4 @@ class PostgresLoader:
             "analysis": analysis_text
         }])
         df.to_sql(table_name, self.engine, if_exists="replace", index=False)
-        print(f"Zapisano analizę LLM do: {table_name}")
+        logger.info("Saved LLM analysis to %s", table_name)

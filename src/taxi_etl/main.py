@@ -1,45 +1,20 @@
-import os
-from pyspark.sql import SparkSession
-from taxi_etl.extract import TaxiDataExtractor
-from taxi_etl.transform import TaxiTransformer
-from taxi_etl.load import PostgresLoader
+import logging
+
 from dotenv import load_dotenv
-from taxi_etl.enrich import LLMEnricher
 
+from taxi_etl.config import Settings
+from taxi_etl.pipeline import run_pipeline
 
-load_dotenv()
-db_password = os.environ.get("DB_PASSWORD")
-DB_CONNECTION_STRING = f"postgresql+psycopg2://postgres:{db_password}@localhost:5432/Testy"
 
 def main() -> None:
-    # --- Extract ---
-    raw_path = TaxiDataExtractor(year=2024, month=1).download()
+    load_dotenv()
+    settings = Settings.from_env()
+    logging.basicConfig(
+        level=settings.log_level,
+        format="%(asctime)s %(levelname)s %(name)s: %(message)s",
+    )
+    run_pipeline(settings)
 
-    spark = SparkSession.builder.appName("TaxiETL").getOrCreate()
-
-    # --- Transform ---
-    transformer = TaxiTransformer(spark)
-
-    bronze = transformer.load_bronze(raw_path)
-    silver_final, rejected_all = transformer.clean_to_silver(bronze)
-    gold = transformer.aggregate_to_gold(silver_final)
-    rejected_summary = transformer.summarize_rejections(rejected_all)
-
-    llm_agg = transformer.aggregate_for_llm(silver_final)
-    #llm_agg.show(24)
-
-    # --- Load ---
-    loader = PostgresLoader(DB_CONNECTION_STRING)
-    loader.save_gold(gold)
-    loader.save_rejected_summary(rejected_summary)
-
-    enricher = LLMEnricher("qwen/qwen2.5-coder-14b")  # albo inny model, którego używałeś
-    analiza = enricher.analyze_hourly_patterns(llm_agg)
-    print(analiza)
-
-    loader.save_llm_analysis(analiza)
-
-    spark.stop()
 
 if __name__ == "__main__":
     main()

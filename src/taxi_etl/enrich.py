@@ -1,10 +1,18 @@
+import logging
+
 import lmstudio as lms
+
+logger = logging.getLogger(__name__)
 
 
 class LLMEnricher:
     """Generuje analizę wzorców godzinowych przez lokalny model LM Studio."""
 
-    def __init__(self, model_name: str):
+    def __init__(self, model_name: str, api_host: str | None = None):
+        if api_host:
+            # must run before the first lms.llm() call
+            lms.configure_default_client(api_host)
+        logger.info("Connecting to LM Studio model %s", model_name)
         self.model = lms.llm(model_name)
 
     def analyze_hourly_patterns(self, hourly_df) -> str:
